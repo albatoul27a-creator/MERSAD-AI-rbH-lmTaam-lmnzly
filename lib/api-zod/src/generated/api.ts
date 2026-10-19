@@ -142,3 +142,277 @@ export const GetDashboardSummaryResponse = zod.object({
 })
 
 
+export const getKitchenStateResponseIngredientsItemOneNameMax = 120;
+
+export const getKitchenStateResponseIngredientsItemOnePriceExclusiveMin = 0;
+export const getKitchenStateResponseIngredientsItemOnePriceMax = 100000;
+
+export const getKitchenStateResponseIngredientsItemOneWastePercentMin = 0;
+export const getKitchenStateResponseIngredientsItemOneWastePercentMax = 95;
+
+
+export const getKitchenStateResponseDishesItemItemsItemOneQuantityExclusiveMin = 0;
+export const getKitchenStateResponseDishesItemItemsItemOneQuantityMax = 100000;
+
+
+export const getKitchenStateResponseDishesItemChannelPricesItemPriceExclusiveMin = 0;
+export const getKitchenStateResponseDishesItemChannelPricesItemPriceMax = 100000;
+
+export const getKitchenStateResponseChannelsItemOneCommissionPercentMin = 0;
+export const getKitchenStateResponseChannelsItemOneCommissionPercentMax = 95;
+
+export const getKitchenStateResponseChannelsItemOneFixedFeeMin = 0;
+export const getKitchenStateResponseChannelsItemOneFixedFeeMax = 100000;
+
+
+
+export const GetKitchenStateResponse = zod.object({
+  "ingredients": zod.array(zod.object({
+  "name": zod.string().min(1).max(getKitchenStateResponseIngredientsItemOneNameMax),
+  "price": zod.number().gt(getKitchenStateResponseIngredientsItemOnePriceExclusiveMin).max(getKitchenStateResponseIngredientsItemOnePriceMax),
+  "unit": zod.enum(['kg', 'g', 'l', 'ml', 'piece']),
+  "wastePercent": zod.number().min(getKitchenStateResponseIngredientsItemOneWastePercentMin).max(getKitchenStateResponseIngredientsItemOneWastePercentMax)
+}).and(zod.object({
+  "id": zod.number().int(),
+  "previousPrice": zod.number().nullable(),
+  "priceChangePercent": zod.number(),
+  "usedByCount": zod.number().int()
+}))),
+  "dishes": zod.array(zod.object({
+  "id": zod.number().int(),
+  "name": zod.string(),
+  "sellingPrice": zod.number(),
+  "packagingCost": zod.number(),
+  "ingredientCost": zod.number(),
+  "totalCost": zod.number(),
+  "items": zod.array(zod.object({
+  "ingredientId": zod.number().int().min(1),
+  "quantity": zod.number().gt(getKitchenStateResponseDishesItemItemsItemOneQuantityExclusiveMin).max(getKitchenStateResponseDishesItemItemsItemOneQuantityMax),
+  "unit": zod.enum(['kg', 'g', 'l', 'ml', 'piece'])
+}).and(zod.object({
+  "ingredientName": zod.string(),
+  "cost": zod.number()
+}))),
+  "channelPrices": zod.array(zod.object({
+  "channelId": zod.number().int().min(1),
+  "price": zod.number().gt(getKitchenStateResponseDishesItemChannelPricesItemPriceExclusiveMin).max(getKitchenStateResponseDishesItemChannelPricesItemPriceMax)
+})),
+  "profits": zod.array(zod.object({
+  "channelId": zod.number().int(),
+  "channelName": zod.string(),
+  "sellingPrice": zod.number(),
+  "commission": zod.number(),
+  "fixedFee": zod.number(),
+  "netRevenue": zod.number(),
+  "profit": zod.number(),
+  "marginPercent": zod.number(),
+  "breakEvenPrice": zod.number(),
+  "suggestedPrice": zod.number().nullable()
+}))
+})),
+  "channels": zod.array(zod.object({
+  "commissionPercent": zod.number().min(getKitchenStateResponseChannelsItemOneCommissionPercentMin).max(getKitchenStateResponseChannelsItemOneCommissionPercentMax),
+  "fixedFee": zod.number().min(getKitchenStateResponseChannelsItemOneFixedFeeMin).max(getKitchenStateResponseChannelsItemOneFixedFeeMax)
+}).and(zod.object({
+  "id": zod.number().int(),
+  "key": zod.enum(['local', 'talabat', 'deliveroo']),
+  "name": zod.string()
+}))),
+  "alerts": zod.array(zod.object({
+  "id": zod.string(),
+  "kind": zod.enum(['loss', 'price_increase', 'pricing']),
+  "severity": zod.enum(['danger', 'warning', 'info']),
+  "title": zod.string(),
+  "message": zod.string(),
+  "dishId": zod.number().int().nullable(),
+  "ingredientId": zod.number().int().nullable()
+}))
+})
+
+
+export const createIngredientBodyNameMax = 120;
+
+export const createIngredientBodyPriceExclusiveMin = 0;
+export const createIngredientBodyPriceMax = 100000;
+
+export const createIngredientBodyWastePercentMin = 0;
+export const createIngredientBodyWastePercentMax = 95;
+
+
+
+export const CreateIngredientBody = zod.object({
+  "name": zod.string().min(1).max(createIngredientBodyNameMax),
+  "price": zod.number().gt(createIngredientBodyPriceExclusiveMin).max(createIngredientBodyPriceMax),
+  "unit": zod.enum(['kg', 'g', 'l', 'ml', 'piece']),
+  "wastePercent": zod.number().min(createIngredientBodyWastePercentMin).max(createIngredientBodyWastePercentMax)
+})
+
+export const CreateIngredientResponse = zod.void()
+
+
+
+
+
+export const UpdateIngredientParams = zod.object({
+  "id": zod.coerce.number().int().min(1)
+})
+
+export const updateIngredientBodyNameMax = 120;
+
+export const updateIngredientBodyPriceExclusiveMin = 0;
+export const updateIngredientBodyPriceMax = 100000;
+
+export const updateIngredientBodyWastePercentMin = 0;
+export const updateIngredientBodyWastePercentMax = 95;
+
+
+
+export const UpdateIngredientBody = zod.object({
+  "name": zod.string().min(1).max(updateIngredientBodyNameMax),
+  "price": zod.number().gt(updateIngredientBodyPriceExclusiveMin).max(updateIngredientBodyPriceMax),
+  "unit": zod.enum(['kg', 'g', 'l', 'ml', 'piece']),
+  "wastePercent": zod.number().min(updateIngredientBodyWastePercentMin).max(updateIngredientBodyWastePercentMax)
+})
+
+export const UpdateIngredientResponse = zod.unknown()
+
+
+
+
+
+export const DeleteIngredientParams = zod.object({
+  "id": zod.coerce.number().int().min(1)
+})
+
+export const DeleteIngredientResponse = zod.void()
+
+
+export const createDishBodyNameMax = 120;
+
+export const createDishBodySellingPriceExclusiveMin = 0;
+export const createDishBodySellingPriceMax = 100000;
+
+export const createDishBodyPackagingCostMin = 0;
+export const createDishBodyPackagingCostMax = 100000;
+
+
+export const createDishBodyItemsItemQuantityExclusiveMin = 0;
+export const createDishBodyItemsItemQuantityMax = 100000;
+
+export const createDishBodyItemsMax = 100;
+
+
+export const createDishBodyChannelPricesItemPriceExclusiveMin = 0;
+export const createDishBodyChannelPricesItemPriceMax = 100000;
+
+export const createDishBodyChannelPricesMax = 3;
+
+
+
+export const CreateDishBody = zod.object({
+  "name": zod.string().min(1).max(createDishBodyNameMax),
+  "sellingPrice": zod.number().gt(createDishBodySellingPriceExclusiveMin).max(createDishBodySellingPriceMax),
+  "packagingCost": zod.number().min(createDishBodyPackagingCostMin).max(createDishBodyPackagingCostMax),
+  "items": zod.array(zod.object({
+  "ingredientId": zod.number().int().min(1),
+  "quantity": zod.number().gt(createDishBodyItemsItemQuantityExclusiveMin).max(createDishBodyItemsItemQuantityMax),
+  "unit": zod.enum(['kg', 'g', 'l', 'ml', 'piece'])
+})).min(1).max(createDishBodyItemsMax),
+  "channelPrices": zod.array(zod.object({
+  "channelId": zod.number().int().min(1),
+  "price": zod.number().gt(createDishBodyChannelPricesItemPriceExclusiveMin).max(createDishBodyChannelPricesItemPriceMax)
+})).max(createDishBodyChannelPricesMax)
+})
+
+export const CreateDishResponse = zod.void()
+
+
+
+
+
+export const UpdateDishParams = zod.object({
+  "id": zod.coerce.number().int().min(1)
+})
+
+export const updateDishBodyNameMax = 120;
+
+export const updateDishBodySellingPriceExclusiveMin = 0;
+export const updateDishBodySellingPriceMax = 100000;
+
+export const updateDishBodyPackagingCostMin = 0;
+export const updateDishBodyPackagingCostMax = 100000;
+
+
+export const updateDishBodyItemsItemQuantityExclusiveMin = 0;
+export const updateDishBodyItemsItemQuantityMax = 100000;
+
+export const updateDishBodyItemsMax = 100;
+
+
+export const updateDishBodyChannelPricesItemPriceExclusiveMin = 0;
+export const updateDishBodyChannelPricesItemPriceMax = 100000;
+
+export const updateDishBodyChannelPricesMax = 3;
+
+
+
+export const UpdateDishBody = zod.object({
+  "name": zod.string().min(1).max(updateDishBodyNameMax),
+  "sellingPrice": zod.number().gt(updateDishBodySellingPriceExclusiveMin).max(updateDishBodySellingPriceMax),
+  "packagingCost": zod.number().min(updateDishBodyPackagingCostMin).max(updateDishBodyPackagingCostMax),
+  "items": zod.array(zod.object({
+  "ingredientId": zod.number().int().min(1),
+  "quantity": zod.number().gt(updateDishBodyItemsItemQuantityExclusiveMin).max(updateDishBodyItemsItemQuantityMax),
+  "unit": zod.enum(['kg', 'g', 'l', 'ml', 'piece'])
+})).min(1).max(updateDishBodyItemsMax),
+  "channelPrices": zod.array(zod.object({
+  "channelId": zod.number().int().min(1),
+  "price": zod.number().gt(updateDishBodyChannelPricesItemPriceExclusiveMin).max(updateDishBodyChannelPricesItemPriceMax)
+})).max(updateDishBodyChannelPricesMax)
+})
+
+export const UpdateDishResponse = zod.unknown()
+
+
+
+
+
+export const DeleteDishParams = zod.object({
+  "id": zod.coerce.number().int().min(1)
+})
+
+export const DeleteDishResponse = zod.void()
+
+
+
+
+
+export const UpdateDeliveryChannelParams = zod.object({
+  "id": zod.coerce.number().int().min(1)
+})
+
+export const updateDeliveryChannelBodyCommissionPercentMin = 0;
+export const updateDeliveryChannelBodyCommissionPercentMax = 95;
+
+export const updateDeliveryChannelBodyFixedFeeMin = 0;
+export const updateDeliveryChannelBodyFixedFeeMax = 100000;
+
+
+
+export const UpdateDeliveryChannelBody = zod.object({
+  "commissionPercent": zod.number().min(updateDeliveryChannelBodyCommissionPercentMin).max(updateDeliveryChannelBodyCommissionPercentMax),
+  "fixedFee": zod.number().min(updateDeliveryChannelBodyFixedFeeMin).max(updateDeliveryChannelBodyFixedFeeMax)
+})
+
+export const UpdateDeliveryChannelResponse = zod.unknown()
+
+
+/**
+ * @summary Generate Arabic AI advice grounded in current recipe costs and channel profits
+ */
+export const GenerateKitchenAdviceResponse = zod.object({
+  "advice": zod.string(),
+  "generatedAt": zod.string()
+})
+
+

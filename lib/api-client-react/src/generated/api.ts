@@ -20,9 +20,14 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  ChannelInput,
   DashboardSummary,
+  DishInput,
   GetTransactionsParams,
   HealthStatus,
+  IngredientInput,
+  KitchenAdvice,
+  KitchenState,
   Transaction,
   TransactionInput,
   TransactionUpdate
@@ -544,4 +549,698 @@ export function useGetDashboardSummary<TData = Awaited<ReturnType<typeof getDash
 
 
 
+
+export const getGetKitchenStateUrl = () => {
+
+
+
+
+  return `/api/kitchen/state`
+}
+
+export const getKitchenState = async ( options?: Parameters<typeof customFetch>[1]): Promise<KitchenState> => {
+
+  return customFetch<KitchenState>(getGetKitchenStateUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetKitchenStateQueryKey = () => {
+    return [
+    `/api/kitchen/state`
+    ] as const;
+    }
+
+
+export const getGetKitchenStateQueryOptions = <TData = Awaited<ReturnType<typeof getKitchenState>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getKitchenState>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetKitchenStateQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getKitchenState>>> = ({ signal }) => getKitchenState({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getKitchenState>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetKitchenStateQueryResult = NonNullable<Awaited<ReturnType<typeof getKitchenState>>>
+export type GetKitchenStateQueryError = ErrorType<unknown>
+
+
+
+export function useGetKitchenState<TData = Awaited<ReturnType<typeof getKitchenState>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getKitchenState>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetKitchenStateQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateIngredientUrl = () => {
+
+
+
+
+  return `/api/kitchen/ingredients`
+}
+
+export const createIngredient = async (ingredientInput: IngredientInput, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<void>(getCreateIngredientUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(ingredientInput)
+  }
+);}
+
+
+
+
+
+export const getCreateIngredientMutationKey = () => ['createIngredient'] as const;
+
+export const getCreateIngredientMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createIngredient>>, TError,CreateIngredientMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createIngredient>>, TError,CreateIngredientMutationVariables, TContext> => {
+
+const mutationKey = getCreateIngredientMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createIngredient>>, CreateIngredientMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  createIngredient(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateIngredientMutationResult = NonNullable<Awaited<ReturnType<typeof createIngredient>>>
+    export type CreateIngredientMutationBody = BodyType<IngredientInput>
+    export type CreateIngredientMutationError = ErrorType<unknown>
+    export type CreateIngredientMutationVariables = {data: BodyType<IngredientInput>}
+
+    export const useCreateIngredient = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createIngredient>>, TError,CreateIngredientMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createIngredient>>,
+        TError,
+        CreateIngredientMutationVariables,
+        TContext
+      > => {
+      return useMutation(getCreateIngredientMutationOptions(options));
+    }
+
+export const getUpdateIngredientUrl = (id: number,) => {
+
+
+
+
+  return `/api/kitchen/ingredients/${id}`
+}
+
+export const updateIngredient = async (id: number,
+    ingredientInput: IngredientInput, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<void>(getUpdateIngredientUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(ingredientInput)
+  }
+);}
+
+
+
+
+
+export const getUpdateIngredientMutationKey = () => ['updateIngredient'] as const;
+
+export const getUpdateIngredientMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateIngredient>>, TError,UpdateIngredientMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateIngredient>>, TError,UpdateIngredientMutationVariables, TContext> => {
+
+const mutationKey = getUpdateIngredientMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateIngredient>>, UpdateIngredientMutationVariables> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateIngredient(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateIngredientMutationResult = NonNullable<Awaited<ReturnType<typeof updateIngredient>>>
+    export type UpdateIngredientMutationBody = BodyType<IngredientInput>
+    export type UpdateIngredientMutationError = ErrorType<void>
+    export type UpdateIngredientMutationVariables = {id: number;data: BodyType<IngredientInput>}
+
+    export const useUpdateIngredient = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateIngredient>>, TError,UpdateIngredientMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateIngredient>>,
+        TError,
+        UpdateIngredientMutationVariables,
+        TContext
+      > => {
+      return useMutation(getUpdateIngredientMutationOptions(options));
+    }
+
+export const getDeleteIngredientUrl = (id: number,) => {
+
+
+
+
+  return `/api/kitchen/ingredients/${id}`
+}
+
+export const deleteIngredient = async (id: number, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+
+  return customFetch<void>(getDeleteIngredientUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeleteIngredientMutationKey = () => ['deleteIngredient'] as const;
+
+export const getDeleteIngredientMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteIngredient>>, TError,DeleteIngredientMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteIngredient>>, TError,DeleteIngredientMutationVariables, TContext> => {
+
+const mutationKey = getDeleteIngredientMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteIngredient>>, DeleteIngredientMutationVariables> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteIngredient(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteIngredientMutationResult = NonNullable<Awaited<ReturnType<typeof deleteIngredient>>>
+
+    export type DeleteIngredientMutationError = ErrorType<void>
+    export type DeleteIngredientMutationVariables = {id: number}
+
+    export const useDeleteIngredient = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteIngredient>>, TError,DeleteIngredientMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteIngredient>>,
+        TError,
+        DeleteIngredientMutationVariables,
+        TContext
+      > => {
+      return useMutation(getDeleteIngredientMutationOptions(options));
+    }
+
+export const getCreateDishUrl = () => {
+
+
+
+
+  return `/api/kitchen/dishes`
+}
+
+export const createDish = async (dishInput: DishInput, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<void>(getCreateDishUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(dishInput)
+  }
+);}
+
+
+
+
+
+export const getCreateDishMutationKey = () => ['createDish'] as const;
+
+export const getCreateDishMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createDish>>, TError,CreateDishMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createDish>>, TError,CreateDishMutationVariables, TContext> => {
+
+const mutationKey = getCreateDishMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createDish>>, CreateDishMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  createDish(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateDishMutationResult = NonNullable<Awaited<ReturnType<typeof createDish>>>
+    export type CreateDishMutationBody = BodyType<DishInput>
+    export type CreateDishMutationError = ErrorType<unknown>
+    export type CreateDishMutationVariables = {data: BodyType<DishInput>}
+
+    export const useCreateDish = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createDish>>, TError,CreateDishMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createDish>>,
+        TError,
+        CreateDishMutationVariables,
+        TContext
+      > => {
+      return useMutation(getCreateDishMutationOptions(options));
+    }
+
+export const getUpdateDishUrl = (id: number,) => {
+
+
+
+
+  return `/api/kitchen/dishes/${id}`
+}
+
+export const updateDish = async (id: number,
+    dishInput: DishInput, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<void>(getUpdateDishUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(dishInput)
+  }
+);}
+
+
+
+
+
+export const getUpdateDishMutationKey = () => ['updateDish'] as const;
+
+export const getUpdateDishMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateDish>>, TError,UpdateDishMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateDish>>, TError,UpdateDishMutationVariables, TContext> => {
+
+const mutationKey = getUpdateDishMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateDish>>, UpdateDishMutationVariables> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateDish(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateDishMutationResult = NonNullable<Awaited<ReturnType<typeof updateDish>>>
+    export type UpdateDishMutationBody = BodyType<DishInput>
+    export type UpdateDishMutationError = ErrorType<unknown>
+    export type UpdateDishMutationVariables = {id: number;data: BodyType<DishInput>}
+
+    export const useUpdateDish = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateDish>>, TError,UpdateDishMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateDish>>,
+        TError,
+        UpdateDishMutationVariables,
+        TContext
+      > => {
+      return useMutation(getUpdateDishMutationOptions(options));
+    }
+
+export const getDeleteDishUrl = (id: number,) => {
+
+
+
+
+  return `/api/kitchen/dishes/${id}`
+}
+
+export const deleteDish = async (id: number, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+
+  return customFetch<void>(getDeleteDishUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeleteDishMutationKey = () => ['deleteDish'] as const;
+
+export const getDeleteDishMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteDish>>, TError,DeleteDishMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteDish>>, TError,DeleteDishMutationVariables, TContext> => {
+
+const mutationKey = getDeleteDishMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteDish>>, DeleteDishMutationVariables> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteDish(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteDishMutationResult = NonNullable<Awaited<ReturnType<typeof deleteDish>>>
+
+    export type DeleteDishMutationError = ErrorType<unknown>
+    export type DeleteDishMutationVariables = {id: number}
+
+    export const useDeleteDish = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteDish>>, TError,DeleteDishMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteDish>>,
+        TError,
+        DeleteDishMutationVariables,
+        TContext
+      > => {
+      return useMutation(getDeleteDishMutationOptions(options));
+    }
+
+export const getUpdateDeliveryChannelUrl = (id: number,) => {
+
+
+
+
+  return `/api/kitchen/channels/${id}`
+}
+
+export const updateDeliveryChannel = async (id: number,
+    channelInput: ChannelInput, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<void>(getUpdateDeliveryChannelUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(channelInput)
+  }
+);}
+
+
+
+
+
+export const getUpdateDeliveryChannelMutationKey = () => ['updateDeliveryChannel'] as const;
+
+export const getUpdateDeliveryChannelMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateDeliveryChannel>>, TError,UpdateDeliveryChannelMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateDeliveryChannel>>, TError,UpdateDeliveryChannelMutationVariables, TContext> => {
+
+const mutationKey = getUpdateDeliveryChannelMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateDeliveryChannel>>, UpdateDeliveryChannelMutationVariables> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateDeliveryChannel(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateDeliveryChannelMutationResult = NonNullable<Awaited<ReturnType<typeof updateDeliveryChannel>>>
+    export type UpdateDeliveryChannelMutationBody = BodyType<ChannelInput>
+    export type UpdateDeliveryChannelMutationError = ErrorType<unknown>
+    export type UpdateDeliveryChannelMutationVariables = {id: number;data: BodyType<ChannelInput>}
+
+    export const useUpdateDeliveryChannel = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateDeliveryChannel>>, TError,UpdateDeliveryChannelMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateDeliveryChannel>>,
+        TError,
+        UpdateDeliveryChannelMutationVariables,
+        TContext
+      > => {
+      return useMutation(getUpdateDeliveryChannelMutationOptions(options));
+    }
+
+export const getGenerateKitchenAdviceUrl = () => {
+
+
+
+
+  return `/api/openai/kitchen-advice`
+}
+
+/**
+ * @summary Generate Arabic AI advice grounded in current recipe costs and channel profits
+ */
+export const generateKitchenAdvice = async ( options?: Parameters<typeof customFetch>[1]): Promise<KitchenAdvice> => {
+
+  return customFetch<KitchenAdvice>(getGenerateKitchenAdviceUrl(),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getGenerateKitchenAdviceMutationKey = () => ['generateKitchenAdvice'] as const;
+
+export const getGenerateKitchenAdviceMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generateKitchenAdvice>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof generateKitchenAdvice>>, TError,void, TContext> => {
+
+const mutationKey = getGenerateKitchenAdviceMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof generateKitchenAdvice>>, void> = () => {
+
+
+          return  generateKitchenAdvice(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GenerateKitchenAdviceMutationResult = NonNullable<Awaited<ReturnType<typeof generateKitchenAdvice>>>
+
+    export type GenerateKitchenAdviceMutationError = ErrorType<void>
+
+
+    /**
+ * @summary Generate Arabic AI advice grounded in current recipe costs and channel profits
+ */
+export const useGenerateKitchenAdvice = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generateKitchenAdvice>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof generateKitchenAdvice>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getGenerateKitchenAdviceMutationOptions(options));
+    }
 

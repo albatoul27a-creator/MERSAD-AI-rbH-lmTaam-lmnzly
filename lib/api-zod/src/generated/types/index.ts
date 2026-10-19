@@ -6,11 +6,28 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './channelInput';
+export * from './channelProfit';
 export * from './dashboardSummary';
+export * from './deliveryChannel';
+export * from './deliveryChannelKey';
+export * from './dish';
+export * from './dishChannelPrice';
+export * from './dishInput';
 export * from './getTransactionsParams';
 export * from './getTransactionsType';
 export * from './healthStatus';
+export * from './ingredient';
+export * from './ingredientInput';
+export * from './kitchenAdvice';
+export * from './kitchenAlert';
+export * from './kitchenAlertKind';
+export * from './kitchenAlertSeverity';
+export * from './kitchenState';
+export * from './kitchenUnit';
 export * from './monthlyPoint';
+export * from './recipeItemInput';
+export * from './recipeLine';
 export * from './transaction';
 export * from './transactionInput';
 export * from './transactionInputType';

@@ -126,6 +126,102 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/DashboardSummary"
+  /kitchen/state:
+    get:
+      operationId: getKitchenState
+      tags: [kitchen]
+      responses:
+        "200":
+          description: Ingredients, dishes with calculated costs and channel profits, and data-driven alerts
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/KitchenState" }
+  /kitchen/ingredients:
+    post:
+      operationId: createIngredient
+      tags: [kitchen]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/IngredientInput" }
+      responses:
+        "201":
+          description: Ingredient saved
+  /kitchen/ingredients/{id}:
+    parameters:
+      - { in: path, name: id, required: true, schema: { type: integer, minimum: 1 } }
+    put:
+      operationId: updateIngredient
+      tags: [kitchen]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/IngredientInput" }
+      responses:
+        "200": { description: Ingredient updated and price change recorded }
+        "409": { description: Unit of an ingredient used in a dish cannot change }
+    delete:
+      operationId: deleteIngredient
+      tags: [kitchen]
+      responses:
+        "204": { description: Ingredient deleted }
+        "409": { description: Ingredient is used in a dish }
+  /kitchen/dishes:
+    post:
+      operationId: createDish
+      tags: [kitchen]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DishInput" }
+      responses:
+        "201": { description: Dish saved }
+  /kitchen/dishes/{id}:
+    parameters:
+      - { in: path, name: id, required: true, schema: { type: integer, minimum: 1 } }
+    put:
+      operationId: updateDish
+      tags: [kitchen]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DishInput" }
+      responses:
+        "200": { description: Dish saved }
+    delete:
+      operationId: deleteDish
+      tags: [kitchen]
+      responses:
+        "204": { description: Dish deleted }
+  /kitchen/channels/{id}:
+    parameters:
+      - { in: path, name: id, required: true, schema: { type: integer, minimum: 1 } }
+    put:
+      operationId: updateDeliveryChannel
+      tags: [kitchen]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ChannelInput" }
+      responses:
+        "200": { description: Channel fees updated }
+  /openai/kitchen-advice:
+    post:
+      operationId: generateKitchenAdvice
+      tags: [kitchen]
+      summary: Generate Arabic AI advice grounded in current recipe costs and channel profits
+      responses:
+        "200":
+          description: AI advice
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/KitchenAdvice" }
+        "503": { description: AI service unavailable; no fabricated fallback }
 components:
   schemas:
     HealthStatus:
@@ -187,4 +283,143 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/MonthlyPoint"
+    KitchenUnit:
+      type: string
+      enum: [kg, g, l, ml, piece]
+    IngredientInput:
+      type: object
+      required: [name, price, unit, wastePercent]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 120 }
+        price: { type: number, exclusiveMinimum: 0, maximum: 100000 }
+        unit: { $ref: "#/components/schemas/KitchenUnit" }
+        wastePercent: { type: number, minimum: 0, maximum: 95 }
+    Ingredient:
+      allOf:
+        - { $ref: "#/components/schemas/IngredientInput" }
+        - type: object
+          required: [id, previousPrice, priceChangePercent, usedByCount]
+          properties:
+            id: { type: integer }
+            previousPrice: { type: [number, "null"] }
+            priceChangePercent: { type: number }
+            usedByCount: { type: integer }
+    RecipeItemInput:
+      type: object
+      required: [ingredientId, quantity, unit]
+      properties:
+        ingredientId: { type: integer, minimum: 1 }
+        quantity: { type: number, exclusiveMinimum: 0, maximum: 100000 }
+        unit: { $ref: "#/components/schemas/KitchenUnit" }
+    DishChannelPrice:
+      type: object
+      required: [channelId, price]
+      properties:
+        channelId: { type: integer, minimum: 1 }
+        price: { type: number, exclusiveMinimum: 0, maximum: 100000 }
+    DishInput:
+      type: object
+      required: [name, sellingPrice, packagingCost, items, channelPrices]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 120 }
+        sellingPrice: { type: number, exclusiveMinimum: 0, maximum: 100000 }
+        packagingCost: { type: number, minimum: 0, maximum: 100000 }
+        items:
+          type: array
+          minItems: 1
+          maxItems: 100
+          items: { $ref: "#/components/schemas/RecipeItemInput" }
+        channelPrices:
+          type: array
+          maxItems: 3
+          items: { $ref: "#/components/schemas/DishChannelPrice" }
+    RecipeLine:
+      allOf:
+        - { $ref: "#/components/schemas/RecipeItemInput" }
+        - type: object
+          required: [ingredientName, cost]
+          properties:
+            ingredientName: { type: string }
+            cost: { type: number }
+    ChannelInput:
+      type: object
+      required: [commissionPercent, fixedFee]
+      properties:
+        commissionPercent: { type: number, minimum: 0, maximum: 95 }
+        fixedFee: { type: number, minimum: 0, maximum: 100000 }
+    DeliveryChannel:
+      allOf:
+        - { $ref: "#/components/schemas/ChannelInput" }
+        - type: object
+          required: [id, key, name]
+          properties:
+            id: { type: integer }
+            key: { type: string, enum: [local, talabat, deliveroo] }
+            name: { type: string }
+    ChannelProfit:
+      type: object
+      required: [channelId, channelName, sellingPrice, commission, fixedFee, netRevenue, profit, marginPercent, breakEvenPrice, suggestedPrice]
+      properties:
+        channelId: { type: integer }
+        channelName: { type: string }
+        sellingPrice: { type: number }
+        commission: { type: number }
+        fixedFee: { type: number }
+        netRevenue: { type: number }
+        profit: { type: number }
+        marginPercent: { type: number }
+        breakEvenPrice: { type: number }
+        suggestedPrice: { type: [number, "null"] }
+    Dish:
+      type: object
+      required: [id, name, sellingPrice, packagingCost, ingredientCost, totalCost, items, channelPrices, profits]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        sellingPrice: { type: number }
+        packagingCost: { type: number }
+        ingredientCost: { type: number }
+        totalCost: { type: number }
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/RecipeLine" }
+        channelPrices:
+          type: array
+          items: { $ref: "#/components/schemas/DishChannelPrice" }
+        profits:
+          type: array
+          items: { $ref: "#/components/schemas/ChannelProfit" }
+    KitchenAlert:
+      type: object
+      required: [id, kind, severity, title, message, dishId, ingredientId]
+      properties:
+        id: { type: string }
+        kind: { type: string, enum: [loss, price_increase, pricing] }
+        severity: { type: string, enum: [danger, warning, info] }
+        title: { type: string }
+        message: { type: string }
+        dishId: { type: [integer, "null"] }
+        ingredientId: { type: [integer, "null"] }
+    KitchenState:
+      type: object
+      required: [ingredients, dishes, channels, alerts]
+      properties:
+        ingredients:
+          type: array
+          items: { $ref: "#/components/schemas/Ingredient" }
+        dishes:
+          type: array
+          items: { $ref: "#/components/schemas/Dish" }
+        channels:
+          type: array
+          items: { $ref: "#/components/schemas/DeliveryChannel" }
+        alerts:
+          type: array
+          items: { $ref: "#/components/schemas/KitchenAlert" }
+    KitchenAdvice:
+      type: object
+      required: [advice, generatedAt]
+      properties:
+        advice: { type: string }
+        generatedAt: { type: string }
 

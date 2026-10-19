@@ -102,6 +102,191 @@ export interface DashboardSummary {
   trend: MonthlyPoint[];
 }
 
+export type KitchenUnit = typeof KitchenUnit[keyof typeof KitchenUnit];
+
+
+export const KitchenUnit = {
+  kg: 'kg',
+  g: 'g',
+  l: 'l',
+  ml: 'ml',
+  piece: 'piece',
+} as const;
+
+export interface IngredientInput {
+  /**
+     * @minLength 1
+     * @maxLength 120
+     */
+  name: string;
+  /**
+     * @maximum 100000
+     * @exclusiveMinimum 0
+     */
+  price: number;
+  unit: KitchenUnit;
+  /**
+     * @minimum 0
+     * @maximum 95
+     */
+  wastePercent: number;
+}
+
+export type Ingredient = IngredientInput & ({
+  id: number;
+  /** @nullable */
+  previousPrice: number | null;
+  priceChangePercent: number;
+  usedByCount: number;
+});
+
+export interface RecipeItemInput {
+  /** @minimum 1 */
+  ingredientId: number;
+  /**
+     * @maximum 100000
+     * @exclusiveMinimum 0
+     */
+  quantity: number;
+  unit: KitchenUnit;
+}
+
+export interface DishChannelPrice {
+  /** @minimum 1 */
+  channelId: number;
+  /**
+     * @maximum 100000
+     * @exclusiveMinimum 0
+     */
+  price: number;
+}
+
+export interface DishInput {
+  /**
+     * @minLength 1
+     * @maxLength 120
+     */
+  name: string;
+  /**
+     * @maximum 100000
+     * @exclusiveMinimum 0
+     */
+  sellingPrice: number;
+  /**
+     * @minimum 0
+     * @maximum 100000
+     */
+  packagingCost: number;
+  /**
+     * @minItems 1
+     * @maxItems 100
+     */
+  items: RecipeItemInput[];
+  /** @maxItems 3 */
+  channelPrices: DishChannelPrice[];
+}
+
+export type RecipeLine = RecipeItemInput & {
+  ingredientName: string;
+  cost: number;
+};
+
+export interface ChannelInput {
+  /**
+     * @minimum 0
+     * @maximum 95
+     */
+  commissionPercent: number;
+  /**
+     * @minimum 0
+     * @maximum 100000
+     */
+  fixedFee: number;
+}
+
+export type DeliveryChannelKey = typeof DeliveryChannelKey[keyof typeof DeliveryChannelKey];
+
+
+export const DeliveryChannelKey = {
+  local: 'local',
+  talabat: 'talabat',
+  deliveroo: 'deliveroo',
+} as const;
+
+export type DeliveryChannel = ChannelInput & {
+  id: number;
+  key: DeliveryChannelKey;
+  name: string;
+};
+
+export interface ChannelProfit {
+  channelId: number;
+  channelName: string;
+  sellingPrice: number;
+  commission: number;
+  fixedFee: number;
+  netRevenue: number;
+  profit: number;
+  marginPercent: number;
+  breakEvenPrice: number;
+  /** @nullable */
+  suggestedPrice: number | null;
+}
+
+export interface Dish {
+  id: number;
+  name: string;
+  sellingPrice: number;
+  packagingCost: number;
+  ingredientCost: number;
+  totalCost: number;
+  items: RecipeLine[];
+  channelPrices: DishChannelPrice[];
+  profits: ChannelProfit[];
+}
+
+export type KitchenAlertKind = typeof KitchenAlertKind[keyof typeof KitchenAlertKind];
+
+
+export const KitchenAlertKind = {
+  loss: 'loss',
+  price_increase: 'price_increase',
+  pricing: 'pricing',
+} as const;
+
+export type KitchenAlertSeverity = typeof KitchenAlertSeverity[keyof typeof KitchenAlertSeverity];
+
+
+export const KitchenAlertSeverity = {
+  danger: 'danger',
+  warning: 'warning',
+  info: 'info',
+} as const;
+
+export interface KitchenAlert {
+  id: string;
+  kind: KitchenAlertKind;
+  severity: KitchenAlertSeverity;
+  title: string;
+  message: string;
+  /** @nullable */
+  dishId: number | null;
+  /** @nullable */
+  ingredientId: number | null;
+}
+
+export interface KitchenState {
+  ingredients: Ingredient[];
+  dishes: Dish[];
+  channels: DeliveryChannel[];
+  alerts: KitchenAlert[];
+}
+
+export interface KitchenAdvice {
+  advice: string;
+  generatedAt: string;
+}
+
 export type GetTransactionsParams = {
 type?: GetTransactionsType;
 search?: string;

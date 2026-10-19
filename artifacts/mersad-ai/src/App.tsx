@@ -5,6 +5,10 @@ import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Shell } from '@/components/shell';
 import Dashboard from '@/pages/dashboard';
+import Ingredients from '@/pages/ingredients';
+import Dishes from '@/pages/dishes';
+import Channels from '@/pages/channels';
+import Alerts from '@/pages/alerts';
 import Transactions from '@/pages/transactions';
 import NotFound from '@/pages/not-found';
 import {
@@ -30,6 +34,10 @@ function Router() {
     <RoutedErrorBoundary>
       <Switch>
         <Route path="/" component={Dashboard} />
+        <Route path="/ingredients" component={Ingredients} />
+        <Route path="/dishes" component={Dishes} />
+        <Route path="/channels" component={Channels} />
+        <Route path="/alerts" component={Alerts} />
         <Route path="/transactions" component={Transactions} />
         <Route component={NotFound} />
       </Switch>
