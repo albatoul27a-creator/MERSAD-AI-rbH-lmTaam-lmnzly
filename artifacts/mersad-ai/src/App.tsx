@@ -1,8 +1,11 @@
-import { type ReactNode } from 'react';
+import { type ReactNode, useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { Shell } from '@/components/shell';
+import Dashboard from '@/pages/dashboard';
+import Transactions from '@/pages/transactions';
 import NotFound from '@/pages/not-found';
 import {
   Route,
@@ -13,31 +16,25 @@ import {
 
 const queryClient = new QueryClient();
 
-function Home() {
-  return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gray-50">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold text-gray-900">
-          Replit Agent is building...
-        </h1>
-        <p className="mt-2 text-sm text-gray-600">
-          Your app will appear here once it's ready.
-        </p>
-      </div>
-    </div>
-  );
-}
-
 function Router() {
+  const [location] = useLocation();
+  useEffect(() => {
+    const title = location === '/transactions' ? 'المعاملات | MERSAD AI' : 'نظرة عامة | MERSAD AI';
+    document.title = title;
+    document.querySelector('meta[property="og:title"]')?.setAttribute('content', title);
+  }, [location]);
   return (
     // Keep a shared shell (sidebar, navbar) outside the boundary so it
     // survives a page crash.
+    <Shell>
     <RoutedErrorBoundary>
       <Switch>
-        <Route path="/" component={Home} />
+        <Route path="/" component={Dashboard} />
+        <Route path="/transactions" component={Transactions} />
         <Route component={NotFound} />
       </Switch>
     </RoutedErrorBoundary>
+    </Shell>
   );
 }
 
@@ -47,6 +44,10 @@ function RoutedErrorBoundary({ children }: { children: ReactNode }) {
 }
 
 function App() {
+  useEffect(() => {
+    document.documentElement.dir = 'rtl';
+    document.documentElement.lang = 'ar';
+  }, []);
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>

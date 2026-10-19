@@ -1,6 +1,6 @@
-# [Project name]
+# MERSAD AI
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+Arabic RTL finance tracker for home restaurants in Kuwait: income, expenses, and monthly profit in KWD.
 
 ## Run & Operate
 
@@ -22,23 +22,31 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/mersad-ai` — web frontend.
+- `artifacts/api-server/src/routes/finance.ts` — financial operations and dashboard aggregation.
+- `lib/api-spec/openapi.yaml` — API contract; regenerate clients after changes.
+- `lib/db/src/schema` — database schema.
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Currency is stored as integer fils, never floating-point dinars. **Why:** KWD uses three decimal places and financial totals must remain exact.
+- This first release is a shared demonstration, not private financial storage. **Why:** authentication was not part of the initial request. Keep the demo warning visible and add authentication plus ownership checks before inviting real financial data.
+- Stitch screens were inaccessible behind Google sign-in. **Why:** the initial implementation follows the user's written visual direction, not a claimed reproduction of unseen screens.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- Current-month revenue, expenses, net profit, changes versus the previous month, and six-month trend.
+- Search and filter transactions by type and month; create, edit, and delete persisted records.
+- Initial records are explicitly labeled examples.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- The user wants white, light gray, and light navy, with an organized Arabic interface and comfortable whitespace.
+- Product audience: home restaurants in Kuwait.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- OpenAPI date-only fields are coerced to Date by generated Zod schemas. Validate output but serialize calendar dates as `YYYY-MM-DD`, not date-time strings.
 
 ## Pointers
 
