@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: finance
+    description: Restaurant income and expense tracking
 paths:
   /healthz:
     get:
@@ -24,6 +26,106 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /transactions:
+    get:
+      operationId: getTransactions
+      tags: [finance]
+      summary: List financial transactions
+      parameters:
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [income, expense]
+        - in: query
+          name: search
+          schema:
+            type: string
+        - in: query
+          name: month
+          description: Calendar month in YYYY-MM format
+          schema:
+            type: string
+            pattern: "^[0-9]{4}-[0-9]{2}$"
+      responses:
+        "200":
+          description: Transactions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Transaction"
+    post:
+      operationId: createTransaction
+      tags: [finance]
+      summary: Create a transaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransactionInput"
+      responses:
+        "201":
+          description: Created transaction
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transaction"
+  /transactions/{id}:
+    patch:
+      operationId: updateTransaction
+      tags: [finance]
+      summary: Update a transaction
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransactionUpdate"
+      responses:
+        "200":
+          description: Updated transaction
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transaction"
+        "404":
+          description: Transaction not found
+    delete:
+      operationId: deleteTransaction
+      tags: [finance]
+      summary: Delete a transaction
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted transaction
+        "404":
+          description: Transaction not found
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [finance]
+      summary: Get current month financial summary and trend
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +135,56 @@ components:
           type: string
       required:
         - status
+    Transaction:
+      type: object
+      required: [id, type, title, category, amount, transactionDate, note, createdAt]
+      properties:
+        id: { type: integer }
+        type: { type: string, enum: [income, expense] }
+        title: { type: string }
+        category: { type: string }
+        amount: { type: number }
+        transactionDate: { type: string, format: date }
+        note: { type: ["string", "null"] }
+        createdAt: { type: string, format: date-time }
+    TransactionInput:
+      type: object
+      required: [type, title, category, amount, transactionDate]
+      properties:
+        type: { type: string, enum: [income, expense] }
+        title: { type: string, minLength: 1, maxLength: 120 }
+        category: { type: string, minLength: 1, maxLength: 60 }
+        amount: { type: number, exclusiveMinimum: 0 }
+        transactionDate: { type: string, format: date }
+        note: { type: string, maxLength: 500 }
+    TransactionUpdate:
+      type: object
+      properties:
+        type: { type: string, enum: [income, expense] }
+        title: { type: string, minLength: 1, maxLength: 120 }
+        category: { type: string, minLength: 1, maxLength: 60 }
+        amount: { type: number, exclusiveMinimum: 0 }
+        transactionDate: { type: string, format: date }
+        note: { type: ["string", "null"], maxLength: 500 }
+    MonthlyPoint:
+      type: object
+      required: [month, income, expense]
+      properties:
+        month: { type: string }
+        income: { type: number }
+        expense: { type: number }
+    DashboardSummary:
+      type: object
+      required: [income, expense, netProfit, profitChangePercent, incomeChangePercent, transactionCount, trend]
+      properties:
+        income: { type: number }
+        expense: { type: number }
+        netProfit: { type: number }
+        profitChangePercent: { type: number }
+        incomeChangePercent: { type: number }
+        transactionCount: { type: integer }
+        trend:
+          type: array
+          items:
+            $ref: "#/components/schemas/MonthlyPoint"
 

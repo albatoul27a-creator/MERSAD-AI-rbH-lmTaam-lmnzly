@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "MERSAD AI"
+description = "لوحة ويب عربية لإدارة أرباح المطاعم المنزلية في الكويت، تعرض الإيرادات والتكاليف والطلبات وتحليلات الأداء في تجربة واضحة وسهلة الاستخدام."
+version = "1.0.0"
+id = "artifacts/mersad-ai"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 22037
+
+[services.development]
+run = "pnpm --filter @workspace/mersad-ai run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/mersad-ai", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/mersad-ai/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22037"
+BASE_PATH = "/"
