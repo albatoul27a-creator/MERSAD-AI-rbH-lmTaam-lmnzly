@@ -162,5 +162,5 @@ overrides:
   js-yaml: '4.3.2'
   source-map-js: 1.2.2
   "brace-expansion@^5.0.0": 5.0.12
-  fast-uri: 3.1.9
+  fast-uri: 3.1.8
   "@tailwindcss/typography>postcss-selector-parser": 7.1.6
